@@ -392,8 +392,10 @@ void *run_game(void *thread_data)
 
     pthread_mutex_lock(&mutexcount);
     player_count--;
+    only4Connections--;
     printf("Numero de jugadores es %d.", player_count);
     player_count--;
+    only4Connections--;
     printf("Numero de jugadores es %d.", player_count);
     pthread_mutex_unlock(&mutexcount);
     
