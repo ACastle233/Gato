@@ -6,12 +6,14 @@
 #include <sys/types.h> 
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 //#define DEBUG
 #define EXAMPLE_GROUP "239.0.0.1"
 
 int player_count = 0;
 int port_global;
 pthread_mutex_t mutexcount;
+int only4Connections = 0;
 
 void error(const char *msg)
 {
@@ -120,7 +122,7 @@ void get_clients(int lis_sockfd, int * cli_sockfd)
 
     /* Escucha por dos clientes. */
     int num_conn = 0;
-    while(num_conn < 2)
+    while(num_conn < 2 && only4Connections < 4)
     {
         /* Escucha por clientes. */
 	    listen(lis_sockfd, 253 - player_count);
@@ -132,7 +134,7 @@ void get_clients(int lis_sockfd, int * cli_sockfd)
 	
 	    /*Acepta la conexion desde el cliente. */
         cli_sockfd[num_conn] = accept(lis_sockfd, (struct sockaddr *) &cli_addr, &clilen);
-    
+        only4Connections++;
         if (cli_sockfd[num_conn] < 0)
             /* Algo no ha salido bien. */
             error("ERROR al aceptar conexion del cliente.");
@@ -402,7 +404,7 @@ void *run_game(void *thread_data)
 //Hilo del envio de datagramas con el numero de puerto al que se esta conectando
 void*envioDTGM()
 {
-    struct sockaddr_in addr;
+   struct sockaddr_in addr;
    int addrlen, sock, cnt;
    char message[50];
 
@@ -424,10 +426,12 @@ void*envioDTGM()
         time_t t = time(0);
         sprintf(message, "%d", port_global);
         printf("Enviando: %s\n", message);
-        cnt = sendto(sock, message, sizeof(message), 0,(struct sockaddr *) &addr, addrlen);
-        if (cnt < 0) {
-            perror("sendto");
-            exit(1);
+        if(only4Connections < 4){
+            cnt = sendto(sock, message, sizeof(message), 0,(struct sockaddr *) &addr, addrlen);
+            if (cnt < 0) {
+                perror("sendto");
+                exit(1);
+            }
         }
         sleep(5);
     }

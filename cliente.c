@@ -12,6 +12,7 @@
 
 struct ip_mreq mreq;
 int port_global;
+int connected = 0;
 void error(const char *msg)
 {
 #ifdef DEBUG
@@ -232,12 +233,12 @@ void *recibeDTGM()
 	 if (cnt < 0) {
 	    perror("recvfrom");
 	    exit(1);
-	 } else if (cnt == 0) {
+	 }else if (cnt == 0) {
  	    break;
 	 }
 	 printf("%s: message = \"%s\"\n", inet_ntoa(localSock.sin_addr), message);
         port_global=atoi(message);
-        break;
+     break;
     }
 }
 /*
