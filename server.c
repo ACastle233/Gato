@@ -415,7 +415,7 @@ void*envioDTGM()
    bzero((char *)&addr, sizeof(addr));
    addr.sin_family = AF_INET;
    addr.sin_addr.s_addr = htonl(INADDR_ANY);
-   addr.sin_port = htons(port_global);
+   addr.sin_port = htons(9000);
    addrlen = sizeof(addr);
 
     /* send */
